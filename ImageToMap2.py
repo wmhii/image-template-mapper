@@ -1,7 +1,8 @@
-from PIL import Image, ImageCms
+from PIL import Image
 import numpy as np
 from itertools import product
 import typing
+import argparse
 
 
 def pack_rgb(rgb: typing.Union[tuple, np.ndarray]) -> int:
@@ -25,7 +26,6 @@ def pack_rgb_image(im: Image.Image) -> np.array:
 
     x_size = im.size[0]
     y_size = im.size[1]
-    print(im.size)
     for x, y in product(range(x_size), range(y_size)):
         mapped_pixels[y, x] = pack_rgb(pixels[y, x])
 
@@ -42,6 +42,9 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
 
     if not image.mode == 'HSV':
         image = image.convert('HSV')
+
+    if not template.mode == 'RGB':
+        template = template.convert('RGB')
 
     image_pix = np.asarray(image)
     template_pix = pack_rgb_image(template)
@@ -73,16 +76,22 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
 
 
 if __name__ == '__main__':
-    image_file_name = 'mountain.jpg'
-    template_file_name = 'keyboardmap.bmp'
-    output_file_name = 'mapped_image.png'
+    parser = argparse.ArgumentParser(prog="ImageToMap2",
+                                     description='Maps the colors of one image to the form of another')
 
-    image: Image.Image = Image.open(image_file_name, 'r')
-    template: Image.Image = Image.open(template_file_name, 'r')
+    parser.add_argument("colors_image",
+                        help="The image that provides initial color pallet")
 
+    parser.add_argument("template",
+                        help="An image that provides the positions of the colors")
+
+    parser.add_argument('-o', '--output',
+                        default="out_image.png",
+                        help="File location for the resulting map (default: out_image.png")
+    args = parser.parse_args()
+
+    image = Image.open(args.colors_image)
+    template = Image.open(args.template)
     out_image = map_image(image, template)
-    out_image.save(output_file_name)
-
-
-
+    out_image.save(args.output)
 
