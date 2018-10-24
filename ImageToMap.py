@@ -76,13 +76,13 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog="ImageToMap2",
+    parser = argparse.ArgumentParser(prog="ImageToMap",
                                      description='Maps the colors of one image to the form of another')
 
     parser.add_argument("colors_image",
                         help="The image that provides initial color pallet")
 
-    parser.add_argument("template",
+    parser.add_argument("template_image",
                         help="An image that provides the positions of the colors")
 
     parser.add_argument('-o', '--output',
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     image = Image.open(args.colors_image)
-    template = Image.open(args.template)
+    template = Image.open(args.template_image)
     out_image = map_image(image, template)
     out_image.save(args.output)
 
