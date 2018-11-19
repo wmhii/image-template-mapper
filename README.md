@@ -22,10 +22,6 @@ Resulting Mapped Image\
 This works as expected. The only issue with this implementation is that you
 have to open the result in an image editor and look at the colors individually.
 
-[keyboard]: keyboardmap.bmp
-[mountain]: mountain.jpg
-[mountain_on_keyboard]: mapped_image.png
-
 ## Interesting Results
 
 I started to run the algorithm against images with no clear structure (unlike the keyboard template).
@@ -41,6 +37,22 @@ In one case, I used the mountain image as my colors image
 which resulted in:\
 ![mountain_circles][mountain_on_circles]
 
+## How it works
 
-[mountain_on_circles]: output15.png
-[circles]: abstract.png
+I think the best way to explain how the algorithm works is to show a simple
+example.
+
+
+
+
+[keyboard]: https://imgur.com/QnU4Kfz.png
+[mountain]: https://imgur.com/AygvH4U.png
+[mountain_on_keyboard]: https://imgur.com/NFv9Ooh.png
+
+
+[mountain_on_circles]: https://imgur.com/TvKNGwI.png
+[circles]: https://imgur.com/iVTFbu6.png
+
+[example_template]: example_template.png
+[example_colors]:
+[example_result]:
