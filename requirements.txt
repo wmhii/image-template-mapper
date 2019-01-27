@@ -1,4 +1,10 @@
 certifi==2018.10.15
-numpy==1.15.4
-Pillow==5.3.0
+imageio==2.4.1
+mkl-fft==1.0.10
+mkl-random==1.0.2
+numpy==1.16.0
+olefile==0.46
+Pillow==5.4.1
+PyQt5==5.11.3
+PyQt5-sip==4.19.13
 wincertstore==0.2
