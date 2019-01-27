@@ -18,11 +18,9 @@ class MapperGui(QMainWindow):
 
         self.template_image = None
         self.colors_image = None
-        self.final_image = Image.open("caleb.jpg")
 
 
         self.resize(1280, 800)
-        self.setWindowTitle("Image Template Mapper")
         self.setStyleSheet("background-color:white;")
         uic.loadUi('mainwindow.ui', self)
 
