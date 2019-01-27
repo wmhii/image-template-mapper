@@ -1,7 +1,6 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
-import PyQt5.QtGui as QtGui
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5 import QtCore
 from PyQt5 import uic
@@ -38,6 +37,7 @@ class MapperGui(QMainWindow):
 
         self.calculateButton.pressed.connect(self.calculate_final_image)
         self.showFullImageButton.pressed.connect(self.show_full_image)
+        self.saveAsButton.pressed.connect(self.save_as)
 
         self.show()
 
@@ -111,6 +111,13 @@ class MapperGui(QMainWindow):
 
         self.final_image = ImageToMap.map_image(self.colors_image, self.template_image)
         self.refresh_final_image_view()
+
+    def save_as(self):
+        if self.final_image is None:
+            return
+
+        file_location = QFileDialog.getSaveFileName(self, 'Save File')
+        self.final_image.save(file_location[0])
 
     def show_full_image(self):
         if self.final_image is None:
