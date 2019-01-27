@@ -7,6 +7,7 @@ from PyQt5 import QtCore
 from PyQt5 import uic
 
 from PIL import Image
+from PIL.ImageQt import ImageQt
 
 import ImageToMap
 
@@ -93,9 +94,8 @@ class MapperGui(QMainWindow):
         self.colorsImageDrop.show()
 
     def refresh_final_image_view(self):
-        self.final_image.convert('RGB')
-        image = QImage(self.final_image.tobytes('raw', 'RGB'), *self.final_image.size, QtGui.QImage.Format_RGB888)
-        pixmap = QPixmap(image)
+        qtImage = ImageQt(self.final_image)
+        pixmap = QPixmap.fromImage(qtImage)
         if pixmap is None:
             return
 
