@@ -115,6 +115,9 @@ class MapperGui(QMainWindow):
             return
 
         file_location = QFileDialog.getSaveFileName(self, 'Save File')
+        if file_location[0] == '':
+            return
+
         self.final_image.save(file_location[0])
 
     def show_full_image(self):
