@@ -36,6 +36,7 @@ class MapperGui(QMainWindow):
         self._set_up_image_drops()
 
         self.calculateButton.pressed.connect(self.calculate_final_image)
+        self.showFullImageButton.pressed.connect(self.show_full_image)
 
         self.show()
 
@@ -92,6 +93,7 @@ class MapperGui(QMainWindow):
         self.colorsImageDrop.show()
 
     def refresh_final_image_view(self):
+        self.final_image.convert('RGB')
         image = QImage(self.final_image.tobytes('raw', 'RGB'), *self.final_image.size, QtGui.QImage.Format_RGB888)
         pixmap = QPixmap(image)
         if pixmap is None:
@@ -109,6 +111,11 @@ class MapperGui(QMainWindow):
 
         self.final_image = ImageToMap.map_image(self.colors_image, self.template_image)
         self.refresh_final_image_view()
+
+    def show_full_image(self):
+        if self.final_image is None:
+            return
+        self.final_image.show()
 
 
 if __name__ == '__main__':
