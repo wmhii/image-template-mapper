@@ -36,19 +36,24 @@ def average_color(color1, color2):
     return unpack_rgb(int((pack_rgb(color1) + pack_rgb(color2))/2))
 
 
-def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
+def map_image(image: Image.Image, template: Image.Image, progress_update) -> Image.Image:
+    progress_update(0, 'Sizing images')
+
     size = template.size
     image = image.resize(size)
 
+    progress_update(0, 'Converting image formats')
     if not image.mode == 'HSV':
         image = image.convert('HSV')
 
     if not template.mode == 'RGB':
         template = template.convert('RGB')
 
+    progress_update(0, 'Separating pixel data')
     image_pix = np.asarray(image)
     template_pix = pack_rgb_image(template)
 
+    progress_update(1, 'Calculating color map')
     colors = dict()
     for y, x in product(range(size[0]), range(size[1])):
         t_pix = template_pix[x, y]
@@ -60,6 +65,9 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
         colors_list = colors[t_pix]
         colors_list.append(i_pix)
 
+        if y == 0:
+            progress_update(x/size[1]*100.0, 'Calculating color map')
+
     for key, value in colors.items():
         colors[key] = np.mean(value, axis=0, dtype=np.uint32)
 
@@ -70,7 +78,11 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
         t_pix = tuple(colors[template_pix[x, y]])
         mapped_pixels[y, x] = t_pix
 
+        if y == 0:
+            progress_update(x/size[1]*100.0, "Building mapped image")
+
     mapped_image = mapped_image.convert('RGB')
+    progress_update(100, "Finished")
 
     return mapped_image
 

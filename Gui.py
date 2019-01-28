@@ -107,7 +107,7 @@ class MapperGui(QMainWindow):
         if self.colors_image is None or self.template_image is None:
             return
 
-        self.final_image = ImageToMap.map_image(self.colors_image, self.template_image)
+        self.final_image = ImageToMap.map_image(self.colors_image, self.template_image, self.update_progress)
         self.refresh_final_image_view()
 
     def save_as(self):
@@ -124,6 +124,11 @@ class MapperGui(QMainWindow):
         if self.final_image is None:
             return
         self.final_image.show()
+
+    def update_progress(self, percentage, message):
+        self.progressBar.setValue(int(percentage))
+        self.statusbar.showMessage(message)
+        QApplication.processEvents()
 
 
 if __name__ == '__main__':
