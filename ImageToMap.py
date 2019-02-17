@@ -1,39 +1,17 @@
 from PIL import Image
 import numpy as np
 from itertools import product
-import typing
 import argparse
 
 
-def pack_rgb(rgb: typing.Union[tuple, np.ndarray]) -> int:
-    rgb_int = (rgb[0] << 16)
-    rgb_int |= (rgb[1] << 8)
-    rgb_int |= rgb[2]
-    return rgb_int
-
-
-def unpack_rgb(rgb_int: int) -> tuple:
-    red = (rgb_int >> 16) & 0xFF
-    green = (rgb_int >> 8) & 0xFF
-    blue = rgb_int & 0xFF
-    return red, green, blue
-
-
 def pack_rgb_image(im: Image.Image) -> np.array:
-    pixels = np.asarray(im)
-    size = (im.size[1], im.size[0])
-    mapped_pixels = np.empty(size, dtype=np.int32)
-
-    x_size = im.size[0]
-    y_size = im.size[1]
-    for x, y in product(range(x_size), range(y_size)):
-        mapped_pixels[y, x] = pack_rgb(pixels[y, x])
-
-    return mapped_pixels
-
-
-def average_color(color1, color2):
-    return unpack_rgb(int((pack_rgb(color1) + pack_rgb(color2))/2))
+    arr = np.array(im)
+    x_size, y_size, _ = arr.shape
+    out = np.zeros((x_size, y_size, 4), dtype=np.uint8)
+    out[:,:,0:3] = arr
+    out = out.view(dtype=np.uint32)
+    out = out.reshape(arr.shape[:-1])
+    return out
 
 
 def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
@@ -90,8 +68,9 @@ if __name__ == '__main__':
                         help="File location for the resulting map (default: out_image.png")
     args = parser.parse_args()
 
+
     image = Image.open(args.colors_image)
     template = Image.open(args.template_image)
+
     out_image = map_image(image, template)
     out_image.save(args.output)
-
