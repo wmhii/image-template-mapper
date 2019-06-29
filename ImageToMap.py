@@ -155,27 +155,6 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
     return mapped_image
 
 
-def test_conversions():
-    from itertools import product
-    for r, g in product(range(255), range(255)):
-        b = 120
-        orig = np.array((r, g, b), dtype=np.uint8)
-        lab = convert_rgb_to_lab(orig)
-        back = convert_lab_to_rgb(lab)
-        print(f'[{orig[0]}, {orig[1]}, {orig[2]}] -> [{lab[0]}, {lab[1]}, {lab[2]}] -> [{back[0]}, {back[1]}, {back[2]}]')
-
-# if __name__ == '__main__':
-#     import cProfile
-#     import pstats
-#     # image = Image.open('caleb.png')
-#     # template = Image.open('abstract.png')
-#     # map_image(image, template)
-#     # cProfile.run('map_image(image, template)', 'stats')
-#
-#     p = pstats.Stats('stats')
-#     p.strip_dirs().sort_stats('tottime').print_stats()
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="ImageToMap",
                                      description='Maps the colors of one image to the form of another')
