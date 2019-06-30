@@ -3,8 +3,17 @@ import numpy as np
 import math
 from itertools import product
 import argparse
+from enum import Enum
 
-reference = [94.811, 100.000, 107.304] # This is used to make our LAB <--> RGB conversions
+
+class ColorSpace(Enum):
+    RGB = 'RGB'
+    LAB = 'LAB'
+    HSV = 'HSV'
+
+    def __str__(self):
+        return self.value
+
 
 def pack_rgb_image(im: Image.Image) -> np.array:
     """Takes a standard three dimensional array (x, y, rgb) and converts it to a two dimensional array (x, y)
@@ -67,6 +76,8 @@ def convert_rgb_to_lab(color:np.array):
     return final
 
 
+reference = [94.811, 100.000, 107.304] # This is used to make our LAB <--> RGB conversions
+
 def convert_lab_to_rgb(color:np.array):
     # First we have to convert to XYZ
 
@@ -105,7 +116,7 @@ def convert_lab_to_rgb(color:np.array):
     return rgb.astype(np.uint8)
 
 
-def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
+def map_image(image: Image.Image, template: Image.Image, color_space=ColorSpace.RGB)-> Image.Image:
     """Create a color/template mapped image with the given images
 
     The form of the final image will come from the template
@@ -115,16 +126,25 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
     size = template.size
     image = image.resize(size)
 
-    # Make sure our images are in the RGB color space
-    if not image.mode == 'RGB':
-        image = image.convert('RGB')
-
+    # template will always be in the RGB color space
     if not template.mode == 'RGB':
         template = template.convert('RGB')
 
+    # put the colors image in the right color space
+    if color_space == ColorSpace.RGB or color_space == ColorSpace.LAB:
+        if not image.mode == 'RGB':
+            image = image.convert('RGB')
+    elif color_space == ColorSpace.HSV:
+        if not image.mode == 'HSV':
+            image = image.convert('HSV')
 
     # Grab pixel arrays of each image (with respective conversions)
-    image_pix = convert_image_to_lab(np.array(image))
+    if color_space == ColorSpace.LAB:
+        image_pix = convert_image_to_lab(np.array(image))
+    else:
+        image_pix = np.array(image)
+
+    # flatten the image so instead of having [r, g, b] at the bottom, we have a single rgb integer
     template_pix = pack_rgb_image(template)
 
     # Here is where we build the color mapping
@@ -139,11 +159,19 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
         colors[t_pix].append(i_pix)
 
     # Mix the collected colors (A simple average) and convert back to the RGB space
-    for key, value in colors.items():
-        colors[key] = convert_lab_to_rgb(np.mean(value, axis=0, dtype=np.float64))
+    if color_space == ColorSpace.RGB or color_space == ColorSpace.HSV:
+        for key, value in colors.items():
+            colors[key] = np.mean(value, axis=0, dtype=np.float64).astype(dtype=np.uint8)
+    elif color_space == ColorSpace.LAB:
+        for key, value in colors.items():
+            colors[key] = convert_lab_to_rgb(np.mean(value, axis=0, dtype=np.float64))
+
+    if color_space == ColorSpace.HSV:
+        mapped_image: Image.Image = Image.new('HSV', size)
+    else:
+        mapped_image: Image.Image = Image.new('RGB', size)
 
     # Create an image to apply the final mapping
-    mapped_image: Image.Image = Image.new('RGB', size)
     mapped_pixels = mapped_image.load()
 
     # Apply the color map
@@ -151,11 +179,15 @@ def map_image(image: Image.Image, template: Image.Image) -> Image.Image:
         t_pix = tuple(colors[template_pix[x, y]])
         mapped_pixels[y, x] = t_pix
 
+    if color_space == ColorSpace.HSV:
+        mapped_image = mapped_image.convert('RGB')
 
     return mapped_image
 
 
 if __name__ == '__main__':
+
+
     parser = argparse.ArgumentParser(prog="ImageToMap",
                                      description='Maps the colors of one image to the form of another')
 
@@ -168,11 +200,17 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output',
                         default="out_image.png",
                         help="File location for the resulting map (default: out_image.png")
+
+    parser.add_argument('-c', '--color_space',
+                        type=ColorSpace,
+                        choices=list(ColorSpace),
+                        default=ColorSpace.RGB,
+                        help="The color space used to average the colors.")
     args = parser.parse_args()
 
 
     image = Image.open(args.colors_image)
     template = Image.open(args.template_image)
 
-    out_image = map_image(image, template)
+    out_image = map_image(image, template, args.color_space)
     out_image.save(args.output)
