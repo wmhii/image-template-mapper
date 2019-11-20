@@ -1,12 +1,3 @@
-# LabSpace Branch
-
-This branch is to implement a conversion to the LAB color space. Mixing colors
-together in the LAB color space is more visually accurate than taking averages
-of RGB or HSV values.
-
-The current implementation adds a significant amount of processing time, so I am
-now working on a faster implentation.
-
 # Image Template Mapper
 
 This project was originally created to find how I might color an RGB

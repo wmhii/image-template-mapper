@@ -37,6 +37,7 @@ def pack_rgb_image(im: Image.Image) -> np.array:
 
 
 def map_image(image: Image.Image, template: Image.Image, mode: Mode) -> Image.Image:
+
     """Create a color/template mapped image with the given images
 
     The form of the final image will come from the template
