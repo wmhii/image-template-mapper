@@ -1,8 +1,8 @@
-from PIL import Image, ImageCms
-from enum import Enum
-import numpy as np
-from itertools import product
 import argparse
+from enum import Enum
+from itertools import product
+import numpy as np
+from PIL import Image, ImageCms
 
 # image transformations from RGB->LAB and LAB->RGB
 rgb_p = ImageCms.createProfile('sRGB')
@@ -110,6 +110,7 @@ def main():
     image = Image.open(args.colors_image)
     template = Image.open(args.template_image)
 
+    # Make sure the image starts out in RGB mode.
     image = image.convert('RGB')
     template = template.convert('RGB')
 
