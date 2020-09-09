@@ -39,9 +39,12 @@ which resulted in:\
 
 ## How it works
 
-I think the best way to explain how the algorithm works is to show a simple
-example.
+I could have used image processing techniques to find the blob that make up each key (but then I wouldn't have the cool side effect of this program!). Instead I built a huge map of colors, and then applied that map to the template image. 
 
+This map is: \
+pixel_color_from_template -> average_pixel_color_from_colors_image. 
+
+where the pixels chosen for each average are the pixels that occur at the same (x, y) location as the template pixel. (I would resize the colors image to match the size of the template image). 
 
 
 
